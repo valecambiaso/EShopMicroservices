@@ -416,3 +416,9 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Launch settings (local only)
+**/launchSettings.json
+
+# Docker leftovers / backups
+Dockerfile.original
