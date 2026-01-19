@@ -1,0 +1,41 @@
+syntax = "proto3"; // Tells the compiler to use proto3 syntax
+
+option csharp_namespace = "Discount.Grpc"; // Specifies the C# namespace for the generated code
+
+package discount;
+
+// The discount service definition.
+service DiscountProtoService {
+	// Discount CRUD operations
+	rpc GetDiscount (GetDiscountRequest) returns (CouponModel);
+	rpc CreateDiscount (CreateDiscountRequest) returns (CouponModel);
+	rpc UpdateDiscount (UpdateDiscountRequest) returns (CouponModel);
+	rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
+}
+
+message GetDiscountRequest { // Request message for getting a discount by product name
+	string productName = 1;
+}
+
+message CouponModel { // Coupon model representing a discount (dto)
+	int32 id = 1;
+	string productName = 2;
+	string description = 3;
+	int32 amount = 4;
+}
+
+message CreateDiscountRequest { // Request message for creating a new discount
+	CouponModel coupon = 1;
+}
+
+message UpdateDiscountRequest { // Request message for updating an existing discount
+	CouponModel coupon = 1;
+}
+
+message DeleteDiscountRequest { // Request message for deleting a discount by product name
+	string productName = 1;
+}
+
+message DeleteDiscountResponse { // Response message for delete operation
+	bool success = 1;
+}
