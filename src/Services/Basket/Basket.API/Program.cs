@@ -1,4 +1,5 @@
 using BuildingBlocks.Exceptions.Handler;
+using Discount.Grpc;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -15,6 +16,7 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(LoggingBehavior<,>)); //Adds logging behavior to MediatR pipeline
 });
 
+//Data services
 builder.Services.AddMarten(opts =>
 {
     opts.Connection(builder.Configuration.GetConnectionString("Database")!); //Configures Marten with the database connection string
@@ -29,6 +31,21 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("Redis"); //Configures Redis cache with the connection string
 });
 
+//Grpc services
+builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(options =>
+{
+    options.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]!); //Configures the gRPC client with the Discount service URL
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler()
+    {
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator // Accepts any server certificate (for development purposes only)
+    };
+    return handler;
+});
+
+//Cross-cutting services
 builder.Services.AddExceptionHandler<CustomExceptionHandler>(); //Registers custom exception handler
 
 builder.Services.AddHealthChecks() 
